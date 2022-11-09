@@ -1,4 +1,3 @@
-const { inputToConfig } = require("@ethereum-waffle/compiler");
 const { assert, expect } = require("chai");
 const { getNamedAccounts, deployments, ethers } = require("hardhat");
 const {
@@ -24,11 +23,11 @@ const {
       });
 
       describe("constructor", async function () {
-        inputToConfig("Initializes the raffle correctly", async function () {
+        it("Initializes the raffle correctly", async function () {
           const raffleState = await raffle.getRaffleState();
           const interval = await raffle.getInterval();
           assert.equal(raffleState.toString(), "0");
-          assert.equal(interval.toString(), networkConfig[chainId]["interval"]);
+          assert.equal(interval.toString(), networkConfig[chainId]["Interval"]);
         });
       });
     });
