@@ -1,5 +1,6 @@
+const { inputToConfig } = require("@ethereum-waffle/compiler");
 const { assert, expect } = require("chai");
-const { network, deployments, ethers } = require("hardhat");
+const { getNamedAccounts, deployments, ethers } = require("hardhat");
 const {
   developmentChains,
   networkConfig,
@@ -7,22 +8,23 @@ const {
 
 !developmentChains.includes(network.name)
   ? describe.skip
-  : describe("Raffle Unit Tests", function () {
-      let raffle, raffleContract, vrfCoordinatorV2Mock, interval, player; // , deployer
+  : describe("RaffleUnit Tests", async function () {
+      let raffle, vrfCoordinatorV2Mock, raffleEntranceFee;
       const chainId = network.config.chainId;
-      beforeEach(async () => {
-        accounts = await ethers.getSigners(); // could also do with getNamedAccounts
-        //   deployer = accounts[0]
-        player = accounts[1];
-        await deployments.fixture(["mocks", "raffle"]); // Deploys modules with the tags "mocks" and "raffle"
-        vrfCoordinatorV2Mock = await ethers.getContract("VRFCoordinatorV2Mock"); // Returns a new connection to the VRFCoordinatorV2Mock contract
-        raffleContract = await ethers.getContract("Raffle"); // Returns a new connection to the Raffle contract
-        raffle = raffleContract.connect(player); // Returns a new instance of the Raffle contract connected to player
-        interval = await raffle.getInterval();
+
+      beforeEach(async function () {
+        deployer = (await getNamedAccounts()).deployer;
+        await deployments.fixture(["all"]);
+        raffle = await ethers.getContract("Raffle", deployer);
+        vrfCoordinatorV2Mock = await ethers.getContract(
+          "VRFCoordinatorV2Mock",
+          deployer
+        );
+        raffleEntranceFee = await raffle.getEntranceFee();
       });
 
-      describe("constructor", function () {
-        it("initializes the raffle correctly", async () => {
+      describe("constructor", async function () {
+        inputToConfig("Initializes the raffle correctly", async function () {
           const raffleState = await raffle.getRaffleState();
           const interval = await raffle.getInterval();
           assert.equal(raffleState.toString(), "0");
