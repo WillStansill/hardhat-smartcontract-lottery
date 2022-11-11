@@ -152,7 +152,7 @@ const {
           const accounts = await ethers.getSigners();
           for (
             let i = startingAccountIndex;
-            i < startingAccountsIndex + additionalEntrants;
+            i < startingAccountIndex + additionalEntrants;
             i++
           ) {
             const accountConnectedRaffle = raffle.connect(accounts[i]);
@@ -162,13 +162,20 @@ const {
             const startingTimeStamp = await raffle.getLastTimeStamp();
 
             await new Promise(async (resolve, reject) => {
-              raffle.once("winnerPicked", () => {
+              raffle.once("winnerPicked", async () => {
                 console.log("Found the event!");
                 try {
-                  console.log("recent winner")
-                  const recentWinner = await raffle.getRecentWinner()
-                  const raffleState = await raffle.getRaffleState()
-                  const endingTimeStamp = await raffle.getLastTimeStamp
+                  console.log(recentWinner);
+                  console.log(accounts[2]);
+                  console.log(accounts[0]);
+                  console.log(accounts[1]);
+                  console.log(accounts[3]);
+                  const recentWinner = await raffle.getRecentWinner();
+                  const raffleState = await raffle.getRaffleState();
+                  const endingTimeStamp = await raffle.getLastTimeStamp;
+                  assert.equal(numPlayers.toString(), "0");
+                  assert.equal(raffleState.toString(), "0");
+                  assert(endingTimeStamp > startingTimeStamp);
                 } catch (e) {
                   reject(e);
                 }
